@@ -1,0 +1,87 @@
+#!/usr/bin/env python
+
+import os
+
+Import('envGlobal')
+
+envGlobal.Tool('libdep_resolve')
+
+if envGlobal['ARCHITECTURE'] == 'hosted':
+    # Build GoogleTest
+    googletest_path = os.path.join('$OUTPOST_CORE_EXTPATH', 'googletest-1.12.1-fused')
+
+    env = envGlobal.Clone()
+    env['CXXFLAGS_language'] = ['-std=c++11'] #override c++ standard for backwards compatibility
+    env.Append(CPPPATH = googletest_path)
+
+    env.RemoveFromList('CCFLAGS_warning', [
+        '-Wconversion',
+        '-Wundef',
+        '-Wmissing-declarations'
+    ])
+    env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+
+    files = env.RecursiveGlob('.cc', searchdir = googletest_path)
+    objects = []
+    for file in files:
+        objects.append(env.Object(file))
+
+    env.StaticLibrary('$BUILDPATH/lib/googletest-local', objects)
+
+    # googletest needs to be linked with rapidcheck and pthread
+    libs_to_link = [('pthread', 'external')]
+
+    # Build RapidCheck
+    #
+    # The build is disabled for GCC versions < 4.9. Although GCC > 4.8.1 should
+    # have full C++11 support an internal error throws errors for RapidCheck.
+    # The error is only fixed for GCC > 4.9 (see
+    # https://gcc.gnu.org/bugzilla/show_bug.cgi?id=55914)
+    if env['GCC_version'] == 0 or env['GCC_version'] >= 40900:
+        rapidcheck_include_paths = [
+            os.path.abspath('rapidcheck/include'),
+            os.path.abspath('rapidcheck/extras/gmock/include/'),
+            os.path.abspath('rapidcheck/extras/gtest/include/'),
+        ]
+
+        env = envGlobal.Clone()
+        env['CXXFLAGS_language'] = ['-std=c++11']
+        env.Append(CPPPATH = rapidcheck_include_paths)
+
+        env.RemoveFromList('CCFLAGS_warning', [
+            '-Wshadow',
+            '-Wundef',
+        ])
+        env.Append(CCFLAGS_warning = '-Wno-undef')
+
+        files = env.RecursiveGlob('.cpp', searchdir = 'rapidcheck/src')
+        env.StaticLibrary('$BUILDPATH/lib/rapidcheck', files)
+
+
+        # use -isystem to avoid that static code analyse tools will check google
+        # test as well. it is compiler specific but since it is just used for
+        # unit tests it should be fine.
+        envGlobal.RegisterStaticDependency('rapidcheck',
+                                           includepaths = rapidcheck_include_paths,
+                                           attributes = 'system'
+                                        )
+        libs_to_link += ['rapidcheck']
+    else:
+        print("Disable RapidCheck for GCC older than 4.9.0. Found %s" % env['GCC_version'])
+
+
+    envGlobal.RegisterStaticDependency('backward-cpp',
+                                        includepaths = os.path.abspath('backward-cpp'),
+                                        attributes = ['header_only', 'system'])
+
+    envGlobal.RegisterStaticDependency('icecream-local',
+                                        includepaths = os.path.abspath('icecream-0.3.1'),
+                                        attributes = ['header_only', 'system'])
+
+    libs_to_link += ['icecream-local']
+
+    envGlobal.RegisterStaticDependency('googletest-local',
+                                       link_libs = libs_to_link,
+                                       includepaths = googletest_path,
+                                       attributes = 'system'
+                                    )

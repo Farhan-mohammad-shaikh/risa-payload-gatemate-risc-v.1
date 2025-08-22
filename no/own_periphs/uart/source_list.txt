@@ -1,0 +1,6 @@
+uart.vhd
+uart_debouncer.vhd
+uart_parity.vhd
+uart_rx.vhd
+uart_tx.vhd
+uart_clk_div.vhd

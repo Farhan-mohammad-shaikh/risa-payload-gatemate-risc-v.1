@@ -1,0 +1,16 @@
+[binaries]
+c     = 'riscv64-unknown-elf-gcc'
+ar    = 'riscv64-unknown-elf-gcc-ar'
+as    = 'riscv64-unknown-elf-as'
+nm    = 'riscv64-unknown-elf-gcc-nm'
+strip = 'riscv64-unknown-elf-strip'
+
+[host_machine]
+system     = 'unknown'
+cpu_family = 'riscv'
+cpu        = 'vexriscv'
+endian     = 'little'
+
+[built-in options]
+c_args      = [ '-Os', '-march=rv32i2p0', '-mabi=ilp32', '-D__vexriscv__', '-g3', '-no-pie', '-fomit-frame-pointer', '-Wall', '-fno-builtin', '-fno-stack-protector', '-I/home/lucas/.local/lib/python3.12/site-packages/pythondata_software_picolibc/data/newlib/libc/tinystdio', '-I/home/lucas/.local/lib/python3.12/site-packages/pythondata_software_picolibc/data/newlib/libc/include', '-I/home/lucas/Dokumente/litex/litex/litex/soc/software/libbase', '-I/home/lucas/Dokumente/litex/litex/litex/soc/software/include', '-I/home/lucas/Dokumente/litex/litex/litex/soc/software', '-I/home/lucas/Dokumente/risa-payload-gatemate-risc-v/no/build/colognechip_gatemate_evb/software/include', '-I/home/lucas/Dokumente/risa-payload-gatemate-risc-v/no/build/colognechip_gatemate_evb/software/include/../libc', '-I/home/lucas/Dokumente/litex/litex/litex/soc/cores/cpu/vexriscv', '-fexceptions', '-Wpragmas', ]
+c_link_args = [ '-nostdlib', '-nodefaultlibs', '-Wl,--no-dynamic-linker', '-Wl,--build-id=none', '-MD', '-MP', '-Os', '-march=rv32i2p0', '-mabi=ilp32', '-D__vexriscv__', '-g3', '-no-pie', '-fomit-frame-pointer', '-Wall', '-fno-builtin', '-fno-stack-protector', '-I/home/lucas/.local/lib/python3.12/site-packages/pythondata_software_picolibc/data/newlib/libc/tinystdio', '-I/home/lucas/.local/lib/python3.12/site-packages/pythondata_software_picolibc/data/newlib/libc/include', '-I/home/lucas/Dokumente/litex/litex/litex/soc/software/libbase', '-I/home/lucas/Dokumente/litex/litex/litex/soc/software/include', '-I/home/lucas/Dokumente/litex/litex/litex/soc/software', '-I/home/lucas/Dokumente/risa-payload-gatemate-risc-v/no/build/colognechip_gatemate_evb/software/include', '-I/home/lucas/Dokumente/risa-payload-gatemate-risc-v/no/build/colognechip_gatemate_evb/software/include/../libc', '-I/home/lucas/Dokumente/litex/litex/litex/soc/cores/cpu/vexriscv', '-fexceptions', '-Wpragmas', '-L/home/lucas/Dokumente/risa-payload-gatemate-risc-v/no/build/colognechip_gatemate_evb/software/include', ]

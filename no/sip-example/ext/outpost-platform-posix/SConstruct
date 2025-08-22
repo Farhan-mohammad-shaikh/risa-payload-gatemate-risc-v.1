@@ -1,0 +1,79 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2017, Jan Sommer
+# Copyright (c) 2017, Fabian Greif
+# Copyright (c) 2020, 2023, Jan-Gerd Mess
+# Copyright (c) 2020, Moyano, Gabriel
+# Copyright (c) 2023, Pascal Pieper
+# Copyright (c) 2024, Janosch Reinking
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+rootpath = os.path.abspath('.')
+vars = Variables('custom.py', ARGUMENTS)
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+
+vars.Add(PathVariable('outpost', 'Set to the location of outpost-core',
+         os.path.join(rootpath, '../outpost-core')))
+
+module = 'hal_posix'
+
+envGlobal = Environment(toolpath=[os.path.join(rootpath, '..', 'scons-build-tools/site_tools')],
+                        buildroot=[rootpath + 'build/'],
+                        tools=['utils_buildformat',
+                               'compilation_db'],
+                        variables=vars,
+                        BASEPATH=os.path.abspath('.'),
+                        ENV=os.environ)
+Help(vars.GenerateHelpText(envGlobal))
+
+envGlobal.Tool('libdep_resolve')
+envGlobal.Tool('utils_unittests')
+envGlobal.Tool('utils_common')
+
+outpostpath = envGlobal['outpost']
+
+# Include directories
+envGlobal.Append(CPPPATH=[
+    os.path.join(outpostpath, 'modules', 'support', 'default')])
+
+buildfolder = os.path.join(rootpath, 'build')
+if envGlobal['coverage']:
+    envGlobal.Tool('compiler_hosted_gcc_coverage')
+    buildtype = 'coverage'
+else:
+    envGlobal.Tool('compiler_hosted_llvm')
+    buildtype = 'test'
+
+envGlobal['BINPATH'] = os.path.join(rootpath, 'bin', 'unittest')
+envGlobal['BUILDPATH'] = os.path.join(rootpath, 'build', buildtype)
+envGlobal['LIBINSTALLPATH'] = os.path.join(envGlobal['BUILDPATH'], 'lib')
+envGlobal.AppendUnique(LIBPATH=['$LIBINSTALLPATH'])
+
+envGlobal.VariantDir('$BUILDPATH', rootpath, duplicate=False)
+envGlobal.VariantDir('$BUILDPATH/core', outpostpath, duplicate=False)
+
+envGlobal.Append(CPPPATH=[
+    os.path.abspath(os.path.join(outpostpath, 'modules/support/default')),
+    os.path.abspath(os.path.join(outpostpath, 'modules/rtos/default')),
+    os.path.abspath(os.path.join(outpostpath, 'modules/sip/default')),
+])
+
+envGlobal.SConscript(os.path.join(
+    '$BUILDPATH/core', 'SConscript.library'), exports='envGlobal')
+envGlobal.SConscript('$BUILDPATH/SConscript.library', exports='envGlobal')
+
+envGlobal.SConscript(os.path.join(
+    '$BUILDPATH/core', 'SConscript.test'), exports='envGlobal')
+envGlobal.DiscardAllRegisteredTests()
+
+envGlobal.SConscript('$BUILDPATH/SConscript.test', exports='envGlobal')
+envGlobal.GenerateAllRegisteredTests(explain="targets_only")

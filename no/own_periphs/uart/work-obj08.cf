@@ -1,0 +1,19 @@
+v 4
+file . "comp/uart.vhd" "b0f3fa3286106054ea5bba2f15e41c37333d41e8" "20241227134832.391":
+  entity uart at 9( 434) + 0 on 33;
+  architecture rtl of uart at 46( 2295) + 0 on 34;
+file . "comp/uart_rx.vhd" "77d9b73035664e672792e9fd09f0c59f83805b88" "20241227134832.328":
+  entity uart_rx at 9( 434) + 0 on 29;
+  architecture rtl of uart_rx at 32( 1513) + 0 on 30;
+file . "comp/uart_clk_div.vhd" "1d998cf0515c836c77990376beb1bf6d22ad87b3" "20241227134832.262":
+  entity uart_clk_div at 9( 434) + 0 on 25;
+  architecture rtl of uart_clk_div at 29( 1031) + 0 on 26;
+file . "comp/uart_parity.vhd" "66a9f91950d412fc8340d7594c03c054365243d4" "20241227134832.209":
+  entity uart_parity at 9( 434) + 0 on 23;
+  architecture rtl of uart_parity at 24( 813) + 0 on 24;
+file . "comp/uart_tx.vhd" "c0ef1c6770917d1e1569b112773da7dffe76d901" "20241227134832.286":
+  entity uart_tx at 9( 434) + 0 on 27;
+  architecture rtl of uart_tx at 31( 1349) + 0 on 28;
+file . "comp/uart_debouncer.vhd" "011a34069203bb40592e8e6adf9bb6735bd6d42f" "20241227134832.368":
+  entity uart_debouncer at 9( 434) + 0 on 31;
+  architecture rtl of uart_debouncer at 26( 939) + 0 on 32;

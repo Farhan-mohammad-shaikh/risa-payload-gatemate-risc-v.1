@@ -1,0 +1,96 @@
+/*
+ * Copyright (c) 2016-2017, Fabian Greif
+ * Copyright (c) 2022, Tobias Pfeffer
+ *
+ * This file is part of the Simple Interface Protocols (SIP) examples.
+ *
+ * It is supplied solely for the use by TUHH and HAW Hamburg
+ * in the frame of the PLUTO 1 flight mission.
+ * Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+ * Contact jan-gerd.mess@dlr.de when in doubt.
+ */
+
+#include <outpost/hal/register.h>
+
+#include <unittest/harness.h>
+
+struct TestRegister
+{
+    static const uint32_t baseAddress = 0xE0000000;
+
+    struct General
+    {
+        static const uint32_t offset = 0x00;
+        static const uint32_t address = baseAddress + offset;
+
+        typedef outpost::hal::Register::Bitfield<uint32_t, 31, 0, address> All;
+
+        typedef outpost::hal::Register::Bitfield<uint32_t, 31, 24, address> Prescaler;
+        typedef outpost::hal::Register::SingleBit<uint32_t, 23, address> Polarity;
+        typedef outpost::hal::Register::SingleBit<uint32_t, 16, address> Enable;
+        typedef outpost::hal::Register::SingleBit<uint32_t, 4, address> Bypass;
+        typedef outpost::hal::Register::SingleBit<uint32_t, 2, address> EncoderEnable;
+        typedef outpost::hal::Register::SingleBit<uint32_t, 1, address> RandomizerEnable;
+        typedef outpost::hal::Register::SingleBit<uint32_t, 0, address> DecoderEnable;
+    };
+};
+
+using outpost::hal::Register;
+
+TEST(RegisterTest, shouldCompile)
+{
+    // The templates write to specific hardware address defined at compile-time.
+    // This makes it hard to test them reliable in form of unit-tests.
+    //
+    // Nonetheless the test here verifies that it is possible to instantiate
+    // the templates as intended.
+    if (false)
+    {
+        // Writing multiple values in one access
+        uint32_t value_1 = Register::getValue<TestRegister::General::Prescaler>(100)
+                           | Register::getValue<TestRegister::General::Enable>(1);
+        Register::write<TestRegister::General::All>(value_1);
+
+        // Direct read and write access
+        // cppcheck-suppress unreadVariable
+        value_1 = Register::read<TestRegister::General::Prescaler>();
+        Register::write<TestRegister::General::Prescaler>(100);
+
+        // Bit operator access
+        uint32_t value_2 = Register::read<TestRegister::General::All>();
+        value_2 &= ~Register::getMask<TestRegister::General::Enable>();
+        value_2 |= Register::getValue<TestRegister::General::Enable>(1);
+        Register::write<TestRegister::General::All>(value_2);
+
+        // Read modify write for two values
+        value_2 = Register::read<TestRegister::General::All>();
+        Register::writeToMemory<TestRegister::General::Prescaler>(100, value_2);
+        Register::writeToMemory<TestRegister::General::Enable>(1, value_2);
+        Register::write<TestRegister::General::All>(value_2);
+
+        // Read complete value to memory and extract needed bits
+        value_2 = Register::read<TestRegister::General::All>();
+    }
+}
+
+TEST(RegisterTest, shouldAccessMemory)
+{
+    uint32_t value = 0;
+    Register::writeToMemory<TestRegister::General::Prescaler>(100, value);
+    Register::writeToMemory<TestRegister::General::Enable>(1, value);
+    EXPECT_EQ(0x64010000U, value);
+
+    uint32_t prescaler = Register::readFromMemory<TestRegister::General::Prescaler>(value);
+    EXPECT_EQ(100U, prescaler);
+
+    Register::writeToMemory<TestRegister::General::All>(100, value);
+    EXPECT_EQ(100U, value);
+}
+
+TEST(RegisterTest, shouldCastToPointer)
+{
+    volatile const uint32_t* expected = reinterpret_cast<volatile uint32_t*>(0xE0000010);
+    volatile const uint32_t* output = Register::getPointer<volatile uint32_t>(
+            TestRegister::General::address + 4 * sizeof(uint32_t));
+    EXPECT_EQ(expected, output);
+}

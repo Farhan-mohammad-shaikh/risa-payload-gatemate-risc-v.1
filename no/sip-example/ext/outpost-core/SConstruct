@@ -1,0 +1,76 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2023, Jan Sommer
+# Copyright (c) 2023, Jan-Gerd Mess
+# Copyright (c) 2023, Hannah Kirstein
+# Copyright (c) 2023, Pascal Pieper
+# Copyright (c) 2024, Pieper, Pascal
+# Copyright (c) 2024, Felix Passenberg
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+"""
+This SConstruct builds and installs a single static library containing all of outpost's modules.
+"""
+
+import os
+
+vars = Variables('custom.py')
+vars.Add(EnumVariable('os', 'Set to posix or none', 'posix', allowed_values=('posix', 'none')))
+vars.Add('tool_path', 'manual set toolpath', '')
+envVars = Environment(variables=vars)
+
+rootpath = os.path.abspath('.')
+tool_path = os.path.join(rootpath, '../scons-build-tools/site_tools')
+sconscript_conan = 'SConscript_conan'
+if envVars['tool_path'] != '':
+    tool_path = envVars['tool_path']
+elif os.path.isfile(sconscript_conan):
+    conan = SConscript(sconscript_conan)
+    tool_path=conan['scons_build_tools']['FRAMEWORKPATH']
+
+envGlobal = Environment(toolpath=[os.path.abspath(tool_path)],
+                        tools=[
+                            'utils_buildformat',    # Reduces console output
+                            'utils_common',         # RecursiveGlob
+                        ],
+                        variables=vars,
+                        BASEPATH=os.path.abspath('.'),
+                        ENV=os.environ)
+Help(vars.GenerateHelpText(envGlobal))
+
+# Instead of forcing, we use the scons-build-tools default c++ version
+# envGlobal['CXXFLAGS_language'] = "-std=c++17"
+
+buildfolder = os.path.join(rootpath, 'build')
+envGlobal['BUILDPATH'] = os.path.abspath(buildfolder)
+envGlobal.VariantDir('$BUILDPATH', rootpath, duplicate=False)
+
+envGlobal.Tool('compiler_hosted_gcc')
+
+arch = envGlobal['os']
+envGlobal['OS'] = arch
+
+envGlobal.Append(CPPPATH=[
+    os.path.abspath('modules/support/default'),
+    os.path.abspath('modules/sip/default'),
+    os.path.abspath('modules/rtos/default'),
+    os.path.abspath('modules/hal/default'),
+])
+
+envGlobal.SConscript(os.path.join('$BUILDPATH', 'SConscript.library'), exports='envGlobal', must_exist=1)
+
+for module in envGlobal['sources']:
+    headers  = envGlobal.RecursiveGlob('.h', searchdir = 'modules/{}/src'.format(module))
+    headers += envGlobal.RecursiveGlob('.h', searchdir = 'modules/{}/arch/{}'.format(module, arch))
+    default_headers = envGlobal.RecursiveGlob('.h', searchdir = 'modules/{}/default'.format(module))
+    envGlobal.Install('$BUILDPATH/include/outpost/%s' % module, headers)
+    envGlobal.Install('$BUILDPATH/include/outpost/%s/default' % module, default_headers)
+
+

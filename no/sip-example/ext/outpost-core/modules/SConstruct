@@ -1,0 +1,118 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2022-2023, Tobias Pfeffer
+# Copyright (c) 2022, Jan-Gerd Mess
+# Copyright (c) 2023, Hannah Kirstein
+# Copyright (c) 2023-2024, Pascal Pieper
+# Copyright (c) 2024, Pieper, Pascal
+# Copyright (c) 2024, Janosch Reinking
+# Copyright (c) 2024, Cold, Erin Cynthia
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+"""
+This SConstruct builds (and runs) the provided unittests for all individual modules.
+"""
+
+import os
+
+vars = Variables('custom.py')
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+vars.Add(BoolVariable('trap', 'Set trap on undefined behavior', 0))
+vars.Add(BoolVariable('use_outpost_asserts', 'activates internal testing assertions', 0))
+vars.Add(BoolVariable('debug', 'deactivates optimizations for better debugging', 0))
+vars.Add('append_buildpath', 'manual append to buildpath', '')
+vars.Add('param_extra_include', 'path to a parameter include', '')
+
+rootpath = os.path.abspath('../')
+envGlobal = Environment(toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
+                        buildroot=[rootpath + 'build/'],
+                        tools=[
+                            'utils_buildformat', # Reduces console output
+                        ],
+                        variables=vars,
+                        ENV=os.environ)
+Help(vars.GenerateHelpText(envGlobal))
+
+if envGlobal['coverage']:
+    envGlobal.Tool('compiler_hosted_gcc_coverage')
+    buildtype = 'coverage'
+else:
+    envGlobal.Tool('compiler_hosted_llvm_sanitizer')
+    buildtype = 'test'
+    if envGlobal['trap']:
+        envGlobal['CCFLAGS_other'] += ['-fsanitize-trap=undefined']
+        buildtype += '-trap' # it's a trap!
+
+if (envGlobal['debug']):
+    print ('Debug mode, disabling optimization')
+    envGlobal['use_outpost_asserts'] = True
+    envGlobal['CCFLAGS_optimize'] = ['-O0', '-g2']
+    buildtype += '-debug'
+
+if envGlobal['use_outpost_asserts']:
+    envGlobal.Append(CCFLAGS_other=['-DOUTPOST_USE_ASSERT=1'])
+
+if envGlobal['append_buildpath']:
+    buildtype = envGlobal['append_buildpath']
+
+envGlobal['OS'] = 'unittest_rtos'
+
+if envGlobal['param_extra_include']:
+    print (f"Using custom parameter include path '{envGlobal['param_extra_include']}'")
+    realpath = os.path.realpath(envGlobal['param_extra_include'])
+    import hashlib; h = hashlib.new('sha1', usedforsecurity=False); h.update(realpath.encode('ascii'))
+    if not os.path.exists(realpath):
+        raise BaseException(f"Provided include path '{realpath}' could not be found!")
+
+    buildtype = os.path.join(buildtype, f"param_{h.hexdigest()[:12]}")
+    # appending it first, before others, to have precedence in include resolution
+    envGlobal.Append(CPPPATH=[realpath])
+
+# 'BUILDPATH' is expected to contain a path by some sub-scripts
+envGlobal['BUILDPATH'] = os.path.join(rootpath, 'build', buildtype)
+
+# enable caching to speed up re-builds
+CacheDir(os.path.join(envGlobal['BUILDPATH'], "cache"))
+
+# Build at buildpath
+envGlobal.VariantDir('$BUILDPATH', rootpath, duplicate=False)
+
+envGlobal.Tool('compilation_db')
+
+envGlobal.Append(CPPPATH=[
+    os.path.join(rootpath, 'modules/support/default'),
+    os.path.join(rootpath, 'modules/sip/default'),
+    os.path.join(rootpath, 'modules/rtos/default'),
+    os.path.join(rootpath, 'modules/hal/default'),
+])
+
+# libs are build in the same path for all modules
+envGlobal.SConscript('$BUILDPATH/SConscript.library', exports='envGlobal')
+envGlobal.SConscript('$BUILDPATH/SConscript.test', exports='envGlobal')
+
+envGlobal.GenerateAllRegisteredTests(
+    explain = "targets_only", # can also be a (prefix) module name
+    coverage_extra_flags = [
+            "--exclude-unreachable-branches",
+    ],
+)
+
+# test duplicate detection:
+did_fail_successfully = False
+envGlobal.RegisterLibrary('double_lib', [])
+try:
+    envGlobal.RegisterLibrary('double_lib', [])
+except Exception as e:
+    # this is expected and correct.
+    if "Library double_lib was already registered" in str(e):
+        did_fail_successfully = True
+        pass
+
+assert did_fail_successfully, "Double registered library was not detected"

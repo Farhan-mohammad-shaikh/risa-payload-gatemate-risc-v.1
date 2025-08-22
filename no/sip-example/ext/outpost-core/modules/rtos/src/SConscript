@@ -1,0 +1,111 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2013-2014, 2017, 2019, Fabian Greif
+# Copyright (c) 2014, 2017, Muhammad Bassam
+# Copyright (c) 2014, Norbert Toth
+# Copyright (c) 2019, Felix Passenberg
+# Copyright (c) 2021, 2024, Passenberg, Felix Constantin
+# Copyright (c) 2021, Jan Sommer
+# Copyright (c) 2022, Tobias Pfeffer
+# Copyright (c) 2024, Pieper, Pascal
+# Copyright (c) 2024, Pascal Pieper
+# Copyright (c) 2024, Janosch Reinking
+# Copyright (c) 2024, Reinking, Janosch
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+Import('envGlobal')
+
+modulename = "outpost_" + os.path.basename(os.path.abspath('../'))
+
+includepaths = [os.path.abspath('.')]
+
+files = envGlobal.RecursiveGlob('.cpp', searchdir='outpost/rtos')
+impl_files = []  # envGlobal.RecursiveGlob('_impl.h') # none
+libdeps = [
+    'outpost_time',  # duration in mutex (and probably others)
+]
+
+# TODO: Check
+# impl_files += env.Glob('outpost/hal/*_impl.h') # never found anything?
+
+if 'OS' not in envGlobal:
+    print("Error: Environment variable 'OS' not defined. Set it to " +
+          "none|rtems|freertos|posix|unittest_rtos to define the used operating system!")
+    Exit(1)
+
+arch_path = '../arch/{}'.format(envGlobal['OS'])
+
+if envGlobal['OS'] == 'posix' or envGlobal['OS'] == 'unittest_rtos':
+    includepaths_posix = [os.path.abspath('../arch/common/posix/')]
+    files_posix = envGlobal.RecursiveGlob(
+        '.cpp', searchdir='../arch/common/posix/')
+    # envGlobal.RecursiveGlob('_impl.h', searchdir = '../arch/common/posix/')
+    impl_files_posix = []
+    libdeps_posix = [('rt', 'external')]
+    libdeps_posix += [('pthread', 'external', 'always_link')]
+    libdeps_posix += [('outpost_rtos', 'header_only')]
+    envGlobal.RegisterLibrary('outpost_rtos_posix_base', files_posix, impl_files_posix,
+                              includepaths=includepaths + includepaths_posix, dependencies=libdeps_posix)
+
+if envGlobal['OS'] != 'unittest_rtos':
+    files += envGlobal.RecursiveGlob('.cpp',
+                                     searchdir=arch_path + '/outpost/rtos')
+    impl_files += envGlobal.RecursiveGlob('_impl.h',
+                                          searchdir=arch_path + '/outpost/rtos/')
+
+includepaths += [os.path.abspath(arch_path)]
+env_flag_overrides = {}
+
+if envGlobal['OS'] == 'none':
+    'nothing special'
+elif envGlobal['OS'] == 'rtems':
+    # as RTEMS is C it uses C-Style casts. Therefore this warning has to
+    # disabled for the RTEMS wrapper files.
+    env_flag_overrides['RemoveFromList'] = [
+        'CXXFLAGS_warning', '-Wold-style-cast']
+elif envGlobal['OS'] == 'freertos':
+    # FreeRTOS uses C-Style casts. Therefore this warning has to
+    # disabled for the FreeRTOS wrapper files.
+    env_flag_overrides['RemoveFromList'] = [
+        'CXXFLAGS_warning', '-Wold-style-cast']
+elif envGlobal['OS'] == 'posix':
+    libdeps += [(lib, 'external') for lib in ['rt', 'pthread']]
+    libdeps += [('outpost_rtos_posix_base', 'always_link')]
+elif envGlobal['OS'] == 'unittest_rtos':
+    includepaths += [os.path.abspath(os.path.join(arch_path, 'inc'))]
+    libdeps_posix = [modulename, ('outpost_rtos_posix_base', 'always_link')]
+    files_posix = envGlobal.RecursiveGlob(
+        '.cpp', searchdir='../arch/unittest_rtos/src/posix')
+    modulename_posix = modulename + '_posix'
+    envGlobal.RegisterLibrary(modulename_posix, files_posix, impl_files_posix,
+                              includepaths=includepaths + includepaths_posix, dependencies=libdeps_posix)
+
+    # per default posix is used
+    libdeps += [(modulename_posix, 'always_link')]
+else:
+    print("TODO: Warn about unknown OS")
+
+envGlobal.RegisterLibrary(modulename, files, impl_files,
+                          includepaths=includepaths, dependencies=libdeps,
+                          env_flag_overrides=env_flag_overrides)
+
+includepaths = [os.path.abspath('.')]
+
+files = envGlobal.RecursiveGlob('.cpp', searchdir='outpost/rtos_utils')
+impl_files = []  # envGlobal.RecursiveGlob('_impl.h') # none
+libdeps = [
+    'outpost_rtos',
+    'outpost_time',
+]
+
+envGlobal.RegisterLibrary(modulename + '_utils', files, impl_files,
+                          includepaths=includepaths, dependencies=libdeps)

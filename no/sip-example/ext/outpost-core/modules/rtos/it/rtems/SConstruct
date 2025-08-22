@@ -1,0 +1,84 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2013-2017, 2019, Fabian Greif
+# Copyright (c) 2020, Jan Malburg
+# Copyright (c) 2022, Tobias Pfeffer
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+# root folder of the outpost library
+rootpath = os.path.abspath('../../../..')
+modulepath = os.path.join(rootpath, 'modules')
+buildfolder = os.path.join(rootpath, 'build')
+
+envGlobal = Environment(
+    toolpath=[os.path.join(rootpath, '../scons-build-tools/site_tools')],
+    tools=[
+        'compiler_sparc_rtems_gcc',
+        'settings_buildpath',
+        'utils_buildformat',
+        'utils_buildsize',
+    ],
+    DEVICE_SIZE={
+        'name' : 'Nexys 3 - LEON3',
+        'flash': 16777216,
+        'ram'  : 16777216
+    },
+    OS='rtems',
+    BOARD='nexys3',
+    COMPILERPREFIX='sparc-rtems4.10.x-',
+    CXXFLAGS_language=['-std=c++11'],
+    CCFLAGS_target=['-mcpu=v8', '-mhard-float', '-qrtems'],
+    ENV=os.environ)
+
+envGlobal['BASEPATH'] = os.path.abspath('.')
+envGlobal['BUILDPATH'] = os.path.abspath(os.path.join(buildfolder, 'rtos/test/rtems'))
+
+envGlobal.Append(CPPPATH=[
+    os.path.abspath(os.path.join(modulepath, 'support/default'))
+])
+
+envGlobal.SConscript(os.path.join(rootpath, 'SConscript.library'), exports='envGlobal')
+
+# Build outpost-hw
+# envGlobal.SConscript(os.path.join(rootpath, 'modules/rtos/ext/outpost-hw/src/SConscript'), exports='envGlobal')
+
+env = envGlobal.Clone()
+
+env.Append(CPPPATH=[
+    '.',
+    '../reference'
+])
+
+env.AppendUnique(LIBS=[
+    'outpost_support',
+    'outpost_hal',
+    'outpost_rtos',
+    'outpost_smpc',
+    'outpost_time',
+    'outpost_utils',
+])
+env.Append(LIBPATH=['$BUILDPATH/lib'])
+
+files = env.Object(env.FilteredGlob(['*.cpp', '../reference/*.cpp'], ['main.cpp']))
+
+env = env.Clone()
+env.RemoveFromList('CXXFLAGS_warning', '-Wold-style-cast')
+
+files.append(env.Object('main.cpp'))
+
+program = env.Program('rtems.elf', files)
+
+envGlobal.Alias('build', program)
+envGlobal.Alias('install', env.Install('bin/', program))
+envGlobal.Alias('size', env.Size(program))
+
+envGlobal.Default('build')

@@ -1,0 +1,50 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2013-2014, 2016-2017, Fabian Greif
+# Copyright (c) 2015, Norbert Toth
+# Copyright (c) 2018, Annika Ofenloch
+# Copyright (c) 2019, Felix Passenberg
+# Copyright (c) 2022, Tobias Pfeffer
+# Copyright (c) 2024, Pieper, Pascal
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+# should be the same name as the ../src library
+module = 'outpost_' + os.path.basename(os.path.abspath('../'))
+
+Import('envGlobal')
+
+### == STUB LIBRARY ==
+
+includepaths = [os.path.abspath('.')]
+
+lib_deps = [
+    module,
+]
+lib_files = [] # envGlobal.RecursiveGlob('.cpp', searchdir = 'unittest') # none
+
+envGlobal.RegisterLibrary(module + '_stubs', lib_files,
+                          includepaths = includepaths, dependencies = lib_deps)
+
+### == UNIT TEST ==
+
+unittest_deps = [
+    module,
+    module + '_stubs',
+    'outpost_base_stubs',   # harness
+    'outpost_smpc_stubs',   # topic_logger
+    'outpost_time_stubs',   # testing_clock
+    'googletest-local'
+]
+
+files = envGlobal.RecursiveGlob('.cpp', searchdir = 'outpost')
+files += [envGlobal.File('main.cpp')]
+
+envGlobal.RegisterTest(module, files, unittest_deps)

@@ -1,0 +1,11 @@
+{
+	"files.associations": {
+		"algorithm": "cpp",
+		"span": "cpp",
+		"assert": "cpp",
+		"array": "cpp",
+		"string": "cpp",
+		"string_view": "cpp",
+		"ranges": "cpp"
+	}
+}

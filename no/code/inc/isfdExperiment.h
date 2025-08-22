@@ -1,0 +1,111 @@
+#ifndef ISFDEXPERIMENT_H_
+#define ISFDEXPERIMENT_H_
+
+#include "experiment.h"
+#include "timer.h"
+#include "logging.h"
+#include "gpio.h"
+
+#define EXPERIMENT_ID 3
+#define BIT(n) (1UL << (n))
+#define QUATERTIME 1
+#define HALFTIME 1
+
+#define TOTAL_TEST_CASE 144
+#define TOTAL_EXP_RUN 6
+
+// GPIO Renaming //
+#define	RESET_PIN ice40_io_vcore_0
+
+#define	LOAD_RESULT_PIN gatemate_debug_4
+#define	READ_EN_PIN gatemate_debug_5
+#define	START_TEST_PIN ice40_io_vio_2
+#define	CLOCK_PIN ice40_io_vio_3
+#define	LOAD_TEST_PIN ice40_io_vio_4
+#define SERIAL_IN_PIN ice40_io_vio_5
+
+#define	SERIAL_OUT_PIN gatemate_debug_3
+#define	TC_FLAG_1 ice40_io_vio_0
+#define	TC_FLAG_2 ice40_io_vio_1
+
+static constexpr uint32_t testMatrix[144] = {
+    0x0000C5F1, 0x0010C5F1, 0x0020C5F1, 0x0030C5F1, 0x0040C5F1, 0x0050C5F1, 0x0060C5F1, 0x0070C5F1, 0x0080C5F1, 0x0090C5F1, 0x00A0C5F1, 0x00B0C5F1, 0x00C0C5F1, 0x00D0C5F1, 0x00E001FF, 0x00F001FF,
+    0x0004C5F1, 0x0014C5F1, 0x0024C5F1, 0x0034C5F1, 0x0044C5F1, 0x0054C5F1, 0x0064C5F1, 0x0074C5F1, 0x0084C5F1, 0x0094C5F1, 0x00A4C5F1, 0x00B4C5F1, 0x00C4C5F1, 0x00D4C5F1, 0x00E001FF, 0x00F001FF,
+    0x0006C5F1, 0x0016C5F1, 0x0026C5F1, 0x0036C5F1, 0x0046C5F1, 0x0056C5F1, 0x0066C5F1, 0x0076C5F1, 0x0086C5F1, 0x0096C5F1, 0x00A6C5F1, 0x00B6C5F1, 0x00C6C5F1, 0x00D6C5F1, 0x00E001FF, 0x00F001FF,
+    0x0008C5F1, 0x0018C5F1, 0x0028C5F1, 0x0038C5F1, 0x0048C5F1, 0x0058C5F1, 0x0068C5F1, 0x0078C5F1, 0x0088C5F1, 0x0098C5F1, 0x00A8C5F1, 0x00B8C5F1, 0x00C8C5F1, 0x00D8C5F1, 0x00E001FF, 0x00F001FF,
+    0x0009C5F1, 0x0019C5F1, 0x0029C5F1, 0x0039C5F1, 0x0049C5F1, 0x0059C5F1, 0x0069C5F1, 0x0079C5F1, 0x0089C5F1, 0x0099C5F1, 0x00A9C5F1, 0x00B9C5F1, 0x00C9C5F1, 0x00D9C5F1, 0x00E001FF, 0x00F001FF,
+    0x000AC5F1, 0x001AC5F1, 0x002AC5F1, 0x003AC5F1, 0x004AC5F1, 0x005AC5F1, 0x006AC5F1, 0x007AC5F1, 0x008AC5F1, 0x009AC5F1, 0x00AAC5F1, 0x00BAC5F1, 0x00CAC5F1, 0x00DAC5F1, 0x00E001FF, 0x00F001FF,
+    0x000CC5F1, 0x001CC5F1, 0x002CC5F1, 0x003CC5F1, 0x004CC5F1, 0x005CC5F1, 0x006CC5F1, 0x007CC5F1, 0x008CC5F1, 0x009CC5F1, 0x00ACC5F1, 0x00BCC5F1, 0x00CCC5F1, 0x00DCC5F1, 0x00E001FF, 0x00F001FF,
+    0x000DC5F1, 0x001DC5F1, 0x002DC5F1, 0x003DC5F1, 0x004DC5F1, 0x005DC5F1, 0x006DC5F1, 0x007DC5F1, 0x008DC5F1, 0x009DC5F1, 0x00ADC5F1, 0x00BDC5F1, 0x00CDC5F1, 0x00DDC5F1, 0x00E001FF, 0x00F001FF,
+    0x000EC5F1, 0x001EC5F1, 0x002EC5F1, 0x003EC5F1, 0x004EC5F1, 0x005EC5F1, 0x006EC5F1, 0x007EC5F1, 0x008EC5F1, 0x009EC5F1, 0x00AEC5F1, 0x00BEC5F1, 0x00CEC5F1, 0x00DEC5F1, 0x00E001FF, 0x00F001FF};
+
+static constexpr uint16_t resultMatrix[144] = {
+    0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x00B6, 0x0155, 0x0155,
+    0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0034, 0x0155, 0x0155,
+    0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x00F5, 0x0155, 0x0155,
+    0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0x0155, 0x0155,
+    0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0155, 0x0155,
+    0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x002C, 0x0155, 0x0155,
+    0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0X0100, 0x0155, 0x0155,
+    0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0155, 0x0155,
+    0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0001, 0x0155, 0x0155};
+
+static constexpr uint64_t TEN_MINUTES_TICKS = 10ULL * 60ULL * 8000000ULL; // 10 minutes in ticks (8 MHz timer)
+
+
+class ISFDExperiment: public Experiment
+{
+public:
+    ISFDExperiment(SensorContext& sensorcontext, ICE40PROG& programmer, MemoryContext& memorycontext, Serial& iceUART) :
+	Experiment(sensorcontext, programmer, memorycontext, iceUART), timer1(TimerID::TIMER1){}
+
+	bool init();
+	ExperimentState run();
+	bool cleanUp();
+
+private:
+	Timer timer1;
+	uint16_t experimentTimeS = 0;
+	uint32_t timeNextEvent = 0;
+	uint32_t expStartTime = 0;
+
+	uint32_t initialTimerValue = 0;
+	uint32_t currentTimerValue  = 0;
+	uint64_t elapsedTicks = 0;
+
+	
+	// uint16_t testResult[144] = {0};
+	// uint16_t testResult = 0;
+	uint16_t compareMatrix[144];
+	uint8_t tcInternalFlag[144];
+	uint16_t currentTestCase = 0;
+	uint8_t cp_num;
+	uint8_t expRunNumber;
+
+	uint32_t flag1;
+	uint32_t flag2;
+
+	uint32_t A;
+
+	uint16_t ramPos=0;
+
+	
+
+	void serialWrite(uint32_t data, uint8_t length);
+	uint16_t serialRead(uint16_t testNum, uint8_t length);
+	void startTest(void);
+	void flagCheck(uint16_t testNum, uint8_t cp_num);
+	void compareFunc(uint16_t testNum);
+
+	bool makeTest(void);
+	
+	void readingSensors(void);
+	void delayms(uint32_t timeout);
+	uint32_t runningTime(void);
+	void hyperramAddUint8_t(uint8_t data);
+	void hyperramAddUint16_t(uint16_t data);
+	void hyperramAddUint32_t(uint32_t data);
+
+};
+
+#endif // ISFDEXPERIMENT_H_

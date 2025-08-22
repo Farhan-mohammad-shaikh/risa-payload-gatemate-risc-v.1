@@ -1,0 +1,67 @@
+# Copyright (c) 2024, Jan-Gerd Mess
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+vars = Variables('custom.py')
+if 'VARS' in call_stack[-1].exports:
+    Import('VARS')
+    vars = VARS
+vars.Add(BoolVariable('coverage', 'Set to build for coverage analysis', 0))
+vars.Add(BoolVariable('trap', 'Set trap on undefined behavior', 0))
+vars.Add(BoolVariable('use_test_asserts', 'activates internal testing assertions', 0))
+vars.Add(BoolVariable('debug', 'deactivates optimizations for better debugging', 0))
+vars.Add('append_buildpath', 'manual append to buildpath', '')
+vars.Add('target', 'compilation target, one of "host" or "raspberry1"')
+vars.Add('program_name', 'name of the resulting executable')
+
+rootpath = Dir('.').abspath
+extpath = os.path.join(rootpath, 'ext/')
+
+envGlobal = Environment(
+    toolpath=[os.path.join(extpath, 'scons-build-tools/site_tools')],
+    tools=[
+        'libdep_resolve',
+        'utils_common',
+        'utils_buildformat',
+    ],
+    variables=vars,
+    BASEPATH=os.path.abspath('.'),
+    ENV=os.environ,
+    )
+
+if envGlobal["target"] == "host":
+    envGlobal.Tool('compiler_hosted_gcc')
+else:
+    print("No target specified")
+    exit()
+
+buildpath = os.path.join(rootpath, 'build', envGlobal['program_name'])
+envGlobal.Tool("settings_buildpath")
+envGlobal["OS"] = "posix"
+envGlobal["BUILDPATH"] = buildpath
+
+envGlobal["CONFIG_PROJECT_NAME"] = envGlobal["program_name"]
+envGlobal["CONFIG_BUILD_BASE"] = os.path.abspath(os.path.join(rootpath, "build/", envGlobal["program_name"]))
+envGlobal["CONFIG_ARTIFACT_PATH"] = os.path.abspath("artifacts")
+
+envGlobal.Append(CPPPATH = [os.path.join(rootpath, "ext/outpost-core/modules/rtos/default")])
+envGlobal.Append(CPPPATH = [os.path.join(rootpath, "ext/outpost-core/modules/support/default")])
+envGlobal.Append(CPPPATH = [os.path.join(rootpath, "ext/outpost-core/modules/sip/default")])
+
+envGlobal.SConscript("ext/outpost-core/SConscript.library", exports='envGlobal')
+envGlobal.SConscript("ext/outpost-platform-posix/SConscript.library", exports='envGlobal')
+
+library_scripts = envGlobal.FindFilesThatAreInACertainFolder('src', 'SConscript', searchdir="modules")
+envGlobal.SConscript(library_scripts, exports='envGlobal')
+
+Return("envGlobal")
+
+
+

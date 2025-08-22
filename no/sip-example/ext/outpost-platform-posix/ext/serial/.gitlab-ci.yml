@@ -1,0 +1,107 @@
+# Read more on when to use this template at
+# https://docs.gitlab.com/ee/ci/yaml/#workflowrules
+workflow:
+  rules:
+    - if: $CI_MERGE_REQUEST_IID
+    - if: $CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+variables:
+  GIT_SUBMODULE_STRATEGY: normal
+
+stages:
+  - checkout
+  - test
+#  - analysis
+#  - package
+
+.docker:
+  image:
+    name: outpost/outpost-toolchain-debian
+  retry: 2
+  tags:
+  - docker, avsci
+
+.env_setup:
+  extends: .docker
+  before_script:
+  - git config --global --add safe.directory $CI_PROJECT_DIR
+  # Checkout scons-build-tools
+  - echo "Checkout scons-build-tools"
+  - cd ..
+  - rm -rf scons-build-tools
+  - git clone $CI_REPOSITORY_URL/../../scons-build-tools.git
+  - cd scons-build-tools
+  # Checkout the correct branch/tag
+  # As per default, the development branch is checked out.
+  # If we are building a tag, the corresponding tag shall be checked out. Same for building main.
+  - |
+      if [ -n "${CI_COMMIT_TAG+x}" ]; then
+        git checkout ${CI_COMMIT_TAG}
+      else
+        if [$CI_COMMIT_BRANCH == "main"]; then
+          git checkout main
+        fi
+      fi
+  - git submodule update --init --recursive
+
+  # Checkout outpost-core
+  - echo "Checkout outpost-core"
+  - cd ..
+  - rm -rf outpost-core
+  - git clone $CI_REPOSITORY_URL/../../outpost-core.git
+  - cd outpost-core
+  # Checkout the correct branch/tag
+  # As per default, the development branch is checked out.
+  # If we are building a tag, the corresponding tag shall be checked out. Same for building main.
+  - |
+      if [ -n "${CI_COMMIT_TAG+x}" ]; then
+        git checkout ${CI_COMMIT_TAG}
+      else
+        if [$CI_COMMIT_BRANCH == "main"]; then
+          git checkout main
+        fi
+      fi
+  - git submodule update --init --recursive
+
+  - cd ../serial
+
+
+
+## Stage: checkout ----------------------------------------------------------------
+
+#PRINT-VERSIONS:
+#  EXTENDS: .ENV_SETUP
+#  STAGE: CHECKOUT
+#  SCRIPT:
+#  - MAKE PRINT-VERSIONS
+
+#FORMAT:
+#  EXTENDS: .ENV_SETUP
+#  STAGE: CHECKOUT
+#  SCRIPT:
+#  - MAKE FORMAT
+#  - |-
+#        MODIFIEDFILES=$(GIT LS-FILES --MODIFIED)
+#        IF [ -N "$MODIFIEDFILES" ]; THEN
+#          ECHO "FOUND MODIFIED FILES:"
+#          ECHO $MODIFIEDFILES
+#          EXIT 1
+#        ELSE
+#          ECHO "SUCCESS."
+#        FI
+
+
+## Stage: test ----------------------------------------------------------------
+unittest:
+  extends: .env_setup
+  stage: test
+  script:
+  - make test
+  artifacts:
+    when: always
+    expire_in: 14 days
+    reports:
+      junit: build/test/*.xml
+
+

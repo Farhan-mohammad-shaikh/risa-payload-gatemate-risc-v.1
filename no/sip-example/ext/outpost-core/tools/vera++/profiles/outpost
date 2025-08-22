@@ -1,0 +1,39 @@
+#!/usr/bin/tclsh
+# Copyright (c) 2013-2014, 2017, German Aerospace Center (DLR)
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+
+# Defines the rules that should be executed
+set rules {
+	F001
+
+	L001
+	L003
+	L004
+	L005
+	L006
+
+	T001
+	T002
+	T003
+	T004
+	T005
+	T006
+	T007
+	T008
+	T009
+	T010
+	T011
+	T013
+	T015
+	T016
+	T017
+	T018
+	T019
+}
+
+# TODO extend to allow for other styles
+# T012 -> negation operator used in its short form
+

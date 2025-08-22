@@ -1,0 +1,63 @@
+
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2014-2015, 2017-2022, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2014-2015, 2017-2018, Fabian Greif (DLR RY-AVS)
+# - 2018, Jan-Gerd Mess (DLR RY-AVS)
+# - 2018, Annika Ofenloch (DLR RY-AVS)
+# - 2021, Norbert Toth (DLR RY-AVS)
+# - 2022, Tobias Pfeffer (DLR RY-AVS)
+# - 2023, Pascal Pieper (DLR RY-AVS)
+
+import os
+
+Import('envGlobal')
+
+# this and most sub-scripts use libdep tool
+envGlobal.Tool('libdep_resolve')
+envGlobal.Tool('utils_unittests')
+envGlobal.Tool('utils_common')
+
+if ('CCFLAGS_other' in envGlobal) and ('-DOUTPOST_USE_ASSERT=1' in envGlobal['CCFLAGS_other']):
+    print ('Building with enabled outpost assertions')
+
+    # check for optional libraries to pretty print stack traces
+    conf = Configure(envGlobal)
+    hasdwarf = conf.CheckHeader('libdwarf/dwarf.h', language="C++")
+    haself = conf.CheckHeader('libelf.h', language="C++")
+    if hasdwarf and haself:
+        conf.env['CCFLAGS_other'] += ['-DBACKWARD_HAS_DWARF=1']
+        conf.env.PrependUnique(LIBS=['elf', 'dwarf'])
+    else:
+        missingLibs = ' '.join((['libdwarf'] if not hasdwarf else []) +
+                               (['libelf'] if not haself else []))
+        print ("System does not have optional libraries '" + missingLibs + "', " +
+               "so stack traces are printed using fallback libraries.\n" +
+               "\tOn debian: `apt-get install libdwarf-dev libelf-dev`")
+    envGlobal = conf.Finish()
+
+envGlobal.AppendUnique(LIBPATH=['/usr/lib', os.path.join(envGlobal['BUILDPATH'], 'lib')])
+
+# avoid pulling these in or cppcheck will take forever to check them...
+if 'append_buildpath' not in envGlobal or envGlobal['append_buildpath'] != 'cppcheck':
+    envGlobal.SConscript(
+        'ext/SConscript', # gtest and rapidcheck and others
+    exports='envGlobal')
+
+tests = envGlobal.FindFilesThatAreInACertainFolder('test', 'SConscript')
+envGlobal.SConscript(tests, exports='envGlobal')
+
+print ("Outpost stubs:", end=' ')
+envGlobal.GenerateAllRegisteredLibraries(explain = True)
+
+# envGlobal.PrintAllRegisteredDependencies()
+

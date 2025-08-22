@@ -1,0 +1,162 @@
+/*
+ * Copyright (c) 2014-2017, Fabian Greif
+ * Copyright (c) 2018, Jan Malburg
+ * Copyright (c) 2022, Tobias Pfeffer
+ * Copyright (c) 2024, Pieper, Pascal
+ *
+ * This file is part of the Simple Interface Protocols (SIP) examples.
+ *
+ * It is supplied solely for the use by TUHH and HAW Hamburg
+ * in the frame of the PLUTO 1 flight mission.
+ * Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+ * Contact jan-gerd.mess@dlr.de when in doubt.
+ */
+
+#ifndef OUTPOST_UTILS_BIT_ACCESS_IMPL_H
+#define OUTPOST_UTILS_BIT_ACCESS_IMPL_H
+
+#include "bit_access.h"
+
+namespace outpost
+{
+// Valid register types
+template <typename T>
+class ValueType
+{
+};
+
+template <>
+class ValueType<uint8_t>
+{
+public:
+    static const int width = 8;
+};
+
+template <>
+class ValueType<uint16_t>
+{
+public:
+    static const int width = 16;
+};
+
+template <>
+class ValueType<uint32_t>
+{
+public:
+    static const int width = 32;
+};
+}  // namespace outpost
+
+template <typename T, int offset>
+bool
+outpost::BitAccess::get(const T& data)
+{
+    static_assert(offset <= (ValueType<T>::width - 1),
+                  "Access out of the range of the register width!");
+
+    bool value = data & (1 << offset);
+    return value;
+}
+
+template <typename T, int end, int start>
+T
+outpost::BitAccess::get(const T& data)
+{
+    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(start <= end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+    static_assert(start >= 0 && end >= 0,
+                  "Invalid bitfield definition! 'start' and 'end' may not be negative");
+
+    const int width = (end - start) + 1;
+    T mask = getMask<T>(width);
+    T value = static_cast<T>((data >> start) & mask);
+
+    return value;
+}
+
+template <typename T, int offset>
+void
+outpost::BitAccess::set(T& data, bool value)
+{
+    static_assert(offset <= (ValueType<T>::width - 1),
+                  "Access out of the range of the register width!");
+
+    T reg = data;
+    T mask = 1 << offset;
+
+    reg &= ~mask;
+    reg |= value ? mask : 0;
+
+    data = reg;
+}
+
+template <typename T, int end, int start>
+void
+outpost::BitAccess::set(T& data, T value)
+{
+    static_assert(start < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(end < ValueType<T>::width, "Access out of the range of the register width!");
+    static_assert(start <= end, "Invalid bitfield definition! 'start' must be smaller than 'end'");
+    static_assert(start >= 0 && end >= 0,
+                  "Invalid bitfield definition! 'start' and 'end' may not be negative");
+
+    T reg = data;
+    const int width = (end - start) + 1;
+    T mask = getMask<T>(width) << start;
+
+    reg &= ~mask;
+    reg |= (value << start) & mask;
+
+    data = reg;
+}
+
+template <typename T>
+T
+outpost::BitAccess::getMask(size_t width)
+{
+    T mask = (static_cast<T>(1) << width) - 1;
+    return mask;
+}
+
+namespace outpost
+{
+// ----------------------------------------------------------------------------
+// Template specialization for common cases
+
+template <>
+inline uint32_t
+BitAccess::get<uint32_t, 31, 0>(const uint32_t& data)
+{
+    return data;
+}
+
+template <>
+inline uint32_t
+BitAccess::get<uint32_t, 31, 24>(const uint32_t& data)
+{
+    const uint32_t mask = 0xFF000000;
+    uint32_t value = (data & mask) >> 24;
+    return value;
+}
+
+template <>
+inline void
+BitAccess::set<uint32_t, 31, 0>(uint32_t& data, uint32_t value)
+{
+    data = value;
+}
+
+template <>
+inline void
+BitAccess::set<uint32_t, 31, 24>(uint32_t& data, uint32_t value)
+{
+    static const uint32_t maskValue = 0xFF000000;
+    static const uint32_t maskClear = 0x00FFFFFF;
+    uint32_t reg = data;
+
+    data = (reg & maskClear) | ((value << 24) & maskValue);
+}
+}  // namespace outpost
+
+#endif

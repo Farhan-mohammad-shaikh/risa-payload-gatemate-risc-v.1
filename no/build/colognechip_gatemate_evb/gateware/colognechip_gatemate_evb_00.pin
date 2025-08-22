@@ -1,0 +1,61 @@
+# Pinfile for Design colognechip_gatemate_evb_00
+# 2025-02-27 00:38:02
+# Bounding Box for compact mode is (x45y36) - (x135y125)   box size: 8190
+
+SizeX = 160 | SizeY = 128;
+
+Pin_inout "ice40_io_vio_2"   Loc =   "IO_EA_A0"   Die_Loc = "GPIO_N1_A[0]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vio_3"   Loc =   "IO_EA_A1"   Die_Loc = "GPIO_N1_A[1]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vio_4"   Loc =   "IO_EA_A2"   Die_Loc = "GPIO_N1_A[2]";  #  preplaced by CCF file
+Pin_out    "osc_en_ice40"   Loc =   "IO_EA_A3"   Die_Loc = "GPIO_N1_A[3]";  #  preplaced by CCF file
+Pin_out   "spi_ice40_mosi"   Loc =   "IO_EA_A4"   Die_Loc = "GPIO_N1_A[4]";  #  preplaced by CCF file
+Pin_in    "spi_ice40_miso"   Loc =   "IO_EA_A5"   Die_Loc = "GPIO_N1_A[5]";  #  preplaced by CCF file
+Pin_inout  "creset_ice40"   Loc =   "IO_EA_A7"   Die_Loc = "GPIO_N1_A[7]";  #  preplaced by CCF file
+Pin_in      "cdone_ice40"   Loc =   "IO_EA_A8"   Die_Loc = "GPIO_N1_A[8]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vio_1"   Loc =   "IO_EA_B0"   Die_Loc = "GPIO_N1_B[0]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vio_5"   Loc =   "IO_EA_B2"   Die_Loc = "GPIO_N1_B[2]";  #  preplaced by CCF file
+Pin_out   "spi_ice40_cs_n"   Loc =   "IO_EA_B4"   Die_Loc = "GPIO_N1_B[4]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vio_0"   Loc =   "IO_EA_B5"   Die_Loc = "GPIO_N1_B[5]";  #  preplaced by CCF file
+Pin_out   "spi_ice40_clk"   Loc =   "IO_EA_B7"   Die_Loc = "GPIO_N1_B[7]";  #  preplaced by CCF file
+Pin_out   "hyperram_rst_n"   Loc =   "IO_EB_A0"   Die_Loc = "GPIO_N2_A[0]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[5]"   Loc =   "IO_EB_A1"   Die_Loc = "GPIO_N2_A[1]";  #  preplaced by CCF file
+Pin_out   "hyperram_cs_n"   Loc =   "IO_EB_A2"   Die_Loc = "GPIO_N2_A[2]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[0]"   Loc =   "IO_EB_A3"   Die_Loc = "GPIO_N2_A[3]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[2]"   Loc =   "IO_EB_A4"   Die_Loc = "GPIO_N2_A[4]";  #  preplaced by CCF file
+Pin_out   "hyperram_clk_p"   Loc =   "IO_EB_A5"   Die_Loc = "GPIO_N2_A[5]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[1]"   Loc =   "IO_EB_A6"   Die_Loc = "GPIO_N2_A[6]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[4]"   Loc =   "IO_EB_B0"   Die_Loc = "GPIO_N2_B[0]";  #  preplaced by CCF file
+Pin_inout "hyperram_rwds"   Loc =   "IO_EB_B2"   Die_Loc = "GPIO_N2_B[2]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[3]"   Loc =   "IO_EB_B4"   Die_Loc = "GPIO_N2_B[4]";  #  preplaced by CCF file
+Pin_out   "hyperram_clk_n"   Loc =   "IO_EB_B5"   Die_Loc = "GPIO_N2_B[5]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[6]"   Loc =   "IO_EB_B6"   Die_Loc = "GPIO_N2_B[6]";  #  preplaced by CCF file
+Pin_inout "hyperram_dq[7]"   Loc =   "IO_EB_B8"   Die_Loc = "GPIO_N2_B[8]";  #  preplaced by CCF file
+Pin_out     "user_led_n2"   Loc =   "IO_NA_A0"   Die_Loc = "GPIO_E1_A[0]";  #  preplaced by CCF file
+Pin_out     "user_led_n3"   Loc =   "IO_NA_A1"   Die_Loc = "GPIO_E1_A[1]";  #  preplaced by CCF file
+Pin_out   "uart_logging_tx"   Loc =   "IO_NA_A7"   Die_Loc = "GPIO_E1_A[7]";  #  preplaced by CCF file
+Pin_out     "user_led_n0"   Loc =   "IO_NA_B0"   Die_Loc = "GPIO_E1_B[0]";  #  preplaced by CCF file
+Pin_out     "user_led_n1"   Loc =   "IO_NA_B1"   Die_Loc = "GPIO_E1_B[1]";  #  preplaced by CCF file
+Pin_in    "uart_logging_rx"   Loc =   "IO_NA_B7"   Die_Loc = "GPIO_E1_B[7]";  #  preplaced by CCF file
+Pin_inout "gatemate_debug_4"   Loc =   "IO_NB_A2"   Die_Loc = "GPIO_E2_A[2]";  #  preplaced by CCF file
+Pin_out     "usb_uart_tx"   Loc =   "IO_NB_A4"   Die_Loc = "GPIO_E2_A[4]";  #  preplaced by CCF file
+Pin_in      "usb_uart_rx"   Loc =   "IO_NB_A5"   Die_Loc = "GPIO_E2_A[5]";  #  preplaced by CCF file
+Pin_inout "gatemate_debug_5"   Loc =   "IO_NB_B2"   Die_Loc = "GPIO_E2_B[2]";  #  preplaced by CCF file
+Pin_inout "gatemate_debug_3"   Loc =   "IO_NB_B3"   Die_Loc = "GPIO_E2_B[3]";  #  preplaced by CCF file
+Pin_out   "uart_ice40_tx"   Loc =   "IO_SA_A0"   Die_Loc = "GPIO_W1_A[0]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vcore_1"   Loc =   "IO_SA_A3"   Die_Loc = "GPIO_W1_A[3]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vcore_4"   Loc =   "IO_SA_A5"   Die_Loc = "GPIO_W1_A[5]";  #  preplaced by CCF file
+Pin_in    "uart_ice40_rx"   Loc =   "IO_SA_B0"   Die_Loc = "GPIO_W1_B[0]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vcore_0"   Loc =   "IO_SA_B3"   Die_Loc = "GPIO_W1_B[3]";  #  preplaced by CCF file
+Pin_inout "ice40_io_vcore_2"   Loc =   "IO_SA_B5"   Die_Loc = "GPIO_W1_B[5]";  #  preplaced by CCF file
+Pin_in            "clk10"   Loc =   "IO_SB_A8"   Die_Loc = "GPIO_W2_A[8]";  #  preplaced by CCF file
+Pin_in    "spi_flash_miso"   Loc =   "IO_WA_A7"   Die_Loc = "GPIO_S3_A[7]";  #  preplaced by CCF file
+Pin_out   "spi_flash_cs_n"   Loc =   "IO_WA_A8"   Die_Loc = "GPIO_S3_A[8]";  #  preplaced by CCF file
+Pin_out   "spi_flash_mosi"   Loc =   "IO_WA_B7"   Die_Loc = "GPIO_S3_B[7]";  #  preplaced by CCF file
+Pin_out   "spi_flash_clk"   Loc =   "IO_WA_B8"   Die_Loc = "GPIO_S3_B[8]";  #  preplaced by CCF file
+Pin_in    "power_fauld_ice40"   Loc =   "IO_WB_A2"   Die_Loc = "GPIO_S1_A[2]";  #  preplaced by CCF file
+Pin_out   "core_en_ice40"   Loc =   "IO_WB_A3"   Die_Loc = "GPIO_S1_A[3]";  #  preplaced by CCF file
+Pin_inout      "i2c0_scl"   Loc =   "IO_WB_A5"   Die_Loc = "GPIO_S1_A[5]";  #  preplaced by CCF file
+Pin_inout      "i2c1_scl"   Loc =   "IO_WB_A7"   Die_Loc = "GPIO_S1_A[7]";  #  preplaced by CCF file
+Pin_out    "vio_en_ice40"   Loc =   "IO_WB_B3"   Die_Loc = "GPIO_S1_B[3]";  #  preplaced by CCF file
+Pin_inout      "i2c0_sda"   Loc =   "IO_WB_B5"   Die_Loc = "GPIO_S1_B[5]";  #  preplaced by CCF file
+Pin_inout      "i2c1_sda"   Loc =   "IO_WB_B7"   Die_Loc = "GPIO_S1_B[7]";  #  preplaced by CCF file

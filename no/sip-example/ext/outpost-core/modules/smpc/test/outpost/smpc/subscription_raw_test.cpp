@@ -1,0 +1,218 @@
+/*
+ * Copyright (c) 2013-2017, Fabian Greif
+ * Copyright (c) 2022, Tobias Pfeffer
+ * Copyright (c) 2023, Felix Passenberg
+ *
+ * This file is part of the Simple Interface Protocols (SIP) examples.
+ *
+ * It is supplied solely for the use by TUHH and HAW Hamburg
+ * in the frame of the PLUTO 1 flight mission.
+ * Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+ * Contact jan-gerd.mess@dlr.de when in doubt.
+ */
+
+#include <outpost/smpc/subscription_raw.h>
+#include <outpost/smpc/topic_raw.h>
+
+#include <unittest/harness.h>
+#include <unittest/smpc/testing_subscription_raw.h>
+
+#include <stdint.h>
+#include <string.h>
+
+using namespace outpost::smpc;
+
+namespace subscription_raw_test
+{
+struct Data
+{
+    uint32_t foo;
+    uint16_t bar;
+};
+
+class Component : public Subscriber
+{
+public:
+    Component() : received{false, false, false, false}
+    {
+        reset();
+    }
+
+    void
+    onReceiveData0(const void* data, size_t)
+    {
+        const Data* d = reinterpret_cast<const Data*>(data);
+        if (d->foo == 0x12345678u && d->bar == 0x9876u)
+        {
+            received[0] = true;
+        }
+    }
+
+    void
+    onReceiveData1(const void*, size_t)
+    {
+        received[1] = true;
+    }
+
+    void
+    onReceiveData2(const void*, size_t)
+    {
+        received[2] = true;
+    }
+
+    void
+    onReceiveData3(const void*, size_t)
+    {
+        received[3] = true;
+    }
+
+    void
+    reset()
+    {
+        for (int i = 0; i < 4; ++i)
+        {
+            received[i] = false;
+        }
+    }
+
+    bool received[4];
+};
+
+class SubscriptionRawTest : public ::testing::Test
+{
+public:
+    SubscriptionRawTest() : data({0x12345678, 0x9876})
+    {
+    }
+
+    virtual void
+    SetUp()
+    {
+        component.reset();
+    }
+
+    virtual void
+    TearDown()
+    {
+        unittest::smpc::TestingSubscriptionRaw::releaseAllSubscriptions();
+    }
+
+    Component component;
+    Data data;
+    TopicRaw topic;
+};
+
+TEST_F(SubscriptionRawTest, receiveNone)
+{
+    topic.publish(&data, sizeof(data));
+    for (int i = 0; i < 4; ++i)
+    {
+        EXPECT_FALSE(component.received[i]);
+    }
+
+    unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
+
+    topic.publish(&data, sizeof(data));
+    for (int i = 0; i < 4; ++i)
+    {
+        EXPECT_FALSE(component.received[i]);
+    }
+}
+
+TEST_F(SubscriptionRawTest, receiveTwo)
+{
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+
+    unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
+
+    topic.publish(&data, sizeof(data));
+    EXPECT_TRUE(component.received[0]);
+    EXPECT_TRUE(component.received[1]);
+    EXPECT_FALSE(component.received[2]);
+    EXPECT_FALSE(component.received[3]);
+
+    delete subscription0;
+    delete subscription1;
+}
+
+TEST_F(SubscriptionRawTest, receiveFour)
+{
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+    SubscriptionRaw* subscription2 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
+    SubscriptionRaw* subscription3 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
+
+    unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
+
+    topic.publish(&data, sizeof(data));
+    EXPECT_TRUE(component.received[0]);
+    EXPECT_TRUE(component.received[1]);
+    EXPECT_TRUE(component.received[2]);
+    EXPECT_TRUE(component.received[3]);
+
+    delete subscription0;
+    delete subscription1;
+    delete subscription2;
+    delete subscription3;
+}
+
+TEST_F(SubscriptionRawTest, receiveFourWithDelete)
+{
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+    SubscriptionRaw* subscription2 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
+    SubscriptionRaw* subscription3 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
+
+    unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
+
+    delete subscription1;
+
+    topic.publish(&data, sizeof(data));
+    EXPECT_TRUE(component.received[0]);
+    EXPECT_FALSE(component.received[1]);
+    EXPECT_TRUE(component.received[2]);
+    EXPECT_TRUE(component.received[3]);
+
+    delete subscription0;
+    delete subscription2;
+    delete subscription3;
+}
+
+TEST_F(SubscriptionRawTest, receiveFourWithDelete2)
+{
+    SubscriptionRaw* subscription0 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData0);
+    SubscriptionRaw* subscription1 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData1);
+    SubscriptionRaw* subscription2 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData2);
+    SubscriptionRaw* subscription3 =
+            new SubscriptionRaw(topic, &component, &Component::onReceiveData3);
+
+    unittest::smpc::TestingSubscriptionRaw::connectSubscriptionsToTopics();
+
+    delete subscription0;
+    delete subscription3;
+
+    topic.publish(&data, sizeof(data));
+    EXPECT_FALSE(component.received[0]);
+    EXPECT_TRUE(component.received[1]);
+    EXPECT_TRUE(component.received[2]);
+    EXPECT_FALSE(component.received[3]);
+
+    delete subscription1;
+    delete subscription2;
+}
+
+}  // namespace subscription_raw_test

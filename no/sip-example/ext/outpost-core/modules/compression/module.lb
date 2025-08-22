@@ -1,0 +1,35 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2015, 2017-2018, Fabian Greif
+# Copyright (c) 2020, Jan-Gerd Mess
+# Copyright (c) 2023, roes_a0
+# Copyright (c) 2024, Felix Passenberg
+# Copyright (c) 2024, Pieper, Pascal
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+def init(module):
+    module.name = "compression"
+    module.description = "Transformation-based data compression."
+
+
+def prepare(module, options):
+    module.depends(
+        "outpost:base",
+        "outpost:utils",
+        "outpost:time"
+    )
+    return True
+
+
+def build(env):
+    env.copy('src', '.', ignore=env.ignore_files("CMakeLists.txt"))
+
+    if env[':test']:
+        env.copy('test', 'test', ignore=env.ignore_files('main.cpp'))

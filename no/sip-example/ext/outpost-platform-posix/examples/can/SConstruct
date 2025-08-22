@@ -1,0 +1,70 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2023, Janosch Reinking
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+rootpath = '../../'
+extpath = os.path.join(rootpath, '..')
+outpost_core_path = os.path.join(extpath, 'outpost-core')
+
+buildpath = os.path.abspath(os.path.join(rootpath, 'build'))
+core_buildpath = os.path.join(buildpath, 'core')
+
+envGlobal = Environment(
+    toolpath=[
+        os.path.join(extpath, 'scons-build-tools/site_tools'),
+    ],
+    tools=['utils_buildformat'],
+    CXXFLAGS_language=['-std=c++17'],
+    ENV=os.environ)
+
+envGlobal.Tool('compiler_hosted_llvm_sanitizer')
+
+envGlobal.VariantDir(buildpath, rootpath, duplicate=False)
+envGlobal.VariantDir(core_buildpath, outpost_core_path, duplicate=False)
+
+envGlobal['BUILDPATH'] = buildpath
+
+envGlobal.Append(CPPPATH=[
+    os.path.join(core_buildpath, 'modules/rtos/default'),
+])
+
+# Build libraries
+envGlobal.SConscript([
+        os.path.join(core_buildpath, 'SConscript.library'),
+        os.path.join(buildpath, 'ext/SConscript'),
+        os.path.join(buildpath, 'src/SConscript'),
+    ],
+    exports='envGlobal'
+)
+
+envGlobal.Append(CPPPATH=[
+    os.path.abspath('.'),
+    os.path.abspath('..'),
+])
+
+env = envGlobal.Clone()
+
+files = env.Glob('$BUILDPATH/examples/can/*.cpp')
+objects = env.Object(files)
+
+senderProgram = env.Program('$BUILDPATH/can_example.out', objects)
+installSender = env.Install('bin', senderProgram)
+env.Alias('build', installSender)
+
+env.AppendUnique(LIBS=[
+    'outpost_hal_posix',
+    'pthread',
+    'sqlite3'
+])
+
+env.Default(['build'])

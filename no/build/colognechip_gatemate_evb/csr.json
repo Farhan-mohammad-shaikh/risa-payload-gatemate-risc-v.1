@@ -1,0 +1,631 @@
+{
+    "csr_bases": {
+        "ctrl": 4026531840,
+        "flash": 4026533888,
+        "gatemate_debug_3": 4026535936,
+        "gatemate_debug_4": 4026537984,
+        "gatemate_debug_5": 4026540032,
+        "hyperram": 4026542080,
+        "i2c0": 4026544128,
+        "i2c1": 4026546176,
+        "ice40": 4026548224,
+        "ice40_cd": 4026550272,
+        "ice40_core_en": 4026552320,
+        "ice40_cp": 4026554368,
+        "ice40_io_vcore_0": 4026556416,
+        "ice40_io_vcore_1": 4026558464,
+        "ice40_io_vcore_2": 4026560512,
+        "ice40_io_vcore_4": 4026562560,
+        "ice40_io_vio_0": 4026564608,
+        "ice40_io_vio_1": 4026566656,
+        "ice40_io_vio_2": 4026568704,
+        "ice40_io_vio_3": 4026570752,
+        "ice40_io_vio_4": 4026572800,
+        "ice40_io_vio_5": 4026574848,
+        "ice40_osc_en": 4026576896,
+        "ice40_power_fauld": 4026578944,
+        "ice40_vio_en": 4026580992,
+        "identifier_mem": 4026583040,
+        "leds": 4026585088,
+        "timer0": 4026587136,
+        "timer1": 4026589184,
+        "uart": 4026591232,
+        "uart_ice40": 4026593280,
+        "uart_logging": 4026595328
+    },
+    "csr_registers": {
+        "ctrl_reset": {
+            "addr": 4026531840,
+            "size": 1,
+            "type": "rw"
+        },
+        "ctrl_scratch": {
+            "addr": 4026531844,
+            "size": 1,
+            "type": "rw"
+        },
+        "ctrl_bus_errors": {
+            "addr": 4026531848,
+            "size": 1,
+            "type": "ro"
+        },
+        "flash_tx": {
+            "addr": 4026533888,
+            "size": 1,
+            "type": "rw"
+        },
+        "flash_rx": {
+            "addr": 4026533892,
+            "size": 1,
+            "type": "ro"
+        },
+        "flash_busy": {
+            "addr": 4026533896,
+            "size": 1,
+            "type": "ro"
+        },
+        "flash_control": {
+            "addr": 4026533900,
+            "size": 1,
+            "type": "rw"
+        },
+        "flash_ss_n": {
+            "addr": 4026533904,
+            "size": 1,
+            "type": "rw"
+        },
+        "gatemate_debug_3_oe": {
+            "addr": 4026535936,
+            "size": 1,
+            "type": "rw"
+        },
+        "gatemate_debug_3_in": {
+            "addr": 4026535940,
+            "size": 1,
+            "type": "ro"
+        },
+        "gatemate_debug_3_out": {
+            "addr": 4026535944,
+            "size": 1,
+            "type": "rw"
+        },
+        "gatemate_debug_4_oe": {
+            "addr": 4026537984,
+            "size": 1,
+            "type": "rw"
+        },
+        "gatemate_debug_4_in": {
+            "addr": 4026537988,
+            "size": 1,
+            "type": "ro"
+        },
+        "gatemate_debug_4_out": {
+            "addr": 4026537992,
+            "size": 1,
+            "type": "rw"
+        },
+        "gatemate_debug_5_oe": {
+            "addr": 4026540032,
+            "size": 1,
+            "type": "rw"
+        },
+        "gatemate_debug_5_in": {
+            "addr": 4026540036,
+            "size": 1,
+            "type": "ro"
+        },
+        "gatemate_debug_5_out": {
+            "addr": 4026540040,
+            "size": 1,
+            "type": "rw"
+        },
+        "hyperram_config": {
+            "addr": 4026542080,
+            "size": 1,
+            "type": "rw"
+        },
+        "hyperram_status": {
+            "addr": 4026542084,
+            "size": 1,
+            "type": "ro"
+        },
+        "hyperram_reg_control": {
+            "addr": 4026542088,
+            "size": 1,
+            "type": "rw"
+        },
+        "hyperram_reg_status": {
+            "addr": 4026542092,
+            "size": 1,
+            "type": "ro"
+        },
+        "hyperram_reg_wdata": {
+            "addr": 4026542096,
+            "size": 1,
+            "type": "rw"
+        },
+        "hyperram_reg_rdata": {
+            "addr": 4026542100,
+            "size": 1,
+            "type": "ro"
+        },
+        "i2c0_w": {
+            "addr": 4026544128,
+            "size": 1,
+            "type": "rw"
+        },
+        "i2c0_r": {
+            "addr": 4026544132,
+            "size": 1,
+            "type": "ro"
+        },
+        "i2c1_w": {
+            "addr": 4026546176,
+            "size": 1,
+            "type": "rw"
+        },
+        "i2c1_r": {
+            "addr": 4026546180,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_tx": {
+            "addr": 4026548224,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_rx": {
+            "addr": 4026548228,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_busy": {
+            "addr": 4026548232,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_control": {
+            "addr": 4026548236,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_ss_n": {
+            "addr": 4026548240,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_cd_in": {
+            "addr": 4026550272,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_core_en_out": {
+            "addr": 4026552320,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_cp_oe": {
+            "addr": 4026554368,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_cp_in": {
+            "addr": 4026554372,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_cp_out": {
+            "addr": 4026554376,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_0_oe": {
+            "addr": 4026556416,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_0_in": {
+            "addr": 4026556420,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vcore_0_out": {
+            "addr": 4026556424,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_1_oe": {
+            "addr": 4026558464,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_1_in": {
+            "addr": 4026558468,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vcore_1_out": {
+            "addr": 4026558472,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_2_oe": {
+            "addr": 4026560512,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_2_in": {
+            "addr": 4026560516,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vcore_2_out": {
+            "addr": 4026560520,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_4_oe": {
+            "addr": 4026562560,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vcore_4_in": {
+            "addr": 4026562564,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vcore_4_out": {
+            "addr": 4026562568,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_0_oe": {
+            "addr": 4026564608,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_0_in": {
+            "addr": 4026564612,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vio_0_out": {
+            "addr": 4026564616,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_1_oe": {
+            "addr": 4026566656,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_1_in": {
+            "addr": 4026566660,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vio_1_out": {
+            "addr": 4026566664,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_2_oe": {
+            "addr": 4026568704,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_2_in": {
+            "addr": 4026568708,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vio_2_out": {
+            "addr": 4026568712,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_3_oe": {
+            "addr": 4026570752,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_3_in": {
+            "addr": 4026570756,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vio_3_out": {
+            "addr": 4026570760,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_4_oe": {
+            "addr": 4026572800,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_4_in": {
+            "addr": 4026572804,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vio_4_out": {
+            "addr": 4026572808,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_5_oe": {
+            "addr": 4026574848,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_io_vio_5_in": {
+            "addr": 4026574852,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_io_vio_5_out": {
+            "addr": 4026574856,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_osc_en_out": {
+            "addr": 4026576896,
+            "size": 1,
+            "type": "rw"
+        },
+        "ice40_power_fauld_in": {
+            "addr": 4026578944,
+            "size": 1,
+            "type": "ro"
+        },
+        "ice40_vio_en_out": {
+            "addr": 4026580992,
+            "size": 1,
+            "type": "rw"
+        },
+        "leds_out": {
+            "addr": 4026585088,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer0_load": {
+            "addr": 4026587136,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer0_reload": {
+            "addr": 4026587140,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer0_en": {
+            "addr": 4026587144,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer0_update_value": {
+            "addr": 4026587148,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer0_value": {
+            "addr": 4026587152,
+            "size": 1,
+            "type": "ro"
+        },
+        "timer0_ev_status": {
+            "addr": 4026587156,
+            "size": 1,
+            "type": "ro"
+        },
+        "timer0_ev_pending": {
+            "addr": 4026587160,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer0_ev_enable": {
+            "addr": 4026587164,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer1_load": {
+            "addr": 4026589184,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer1_reload": {
+            "addr": 4026589188,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer1_en": {
+            "addr": 4026589192,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer1_update_value": {
+            "addr": 4026589196,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer1_value": {
+            "addr": 4026589200,
+            "size": 1,
+            "type": "ro"
+        },
+        "timer1_ev_status": {
+            "addr": 4026589204,
+            "size": 1,
+            "type": "ro"
+        },
+        "timer1_ev_pending": {
+            "addr": 4026589208,
+            "size": 1,
+            "type": "rw"
+        },
+        "timer1_ev_enable": {
+            "addr": 4026589212,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_rxtx": {
+            "addr": 4026591232,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_txfull": {
+            "addr": 4026591236,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_rxempty": {
+            "addr": 4026591240,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_ev_status": {
+            "addr": 4026591244,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_ev_pending": {
+            "addr": 4026591248,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_ev_enable": {
+            "addr": 4026591252,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_txempty": {
+            "addr": 4026591256,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_rxfull": {
+            "addr": 4026591260,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_ice40_tx_data": {
+            "addr": 4026593280,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_ice40_rx_data": {
+            "addr": 4026593284,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_ice40_control": {
+            "addr": 4026593288,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_ice40_status": {
+            "addr": 4026593292,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_ice40_ev_status": {
+            "addr": 4026593296,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_ice40_ev_pending": {
+            "addr": 4026593300,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_ice40_ev_enable": {
+            "addr": 4026593304,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_logging_tx_data": {
+            "addr": 4026595328,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_logging_rx_data": {
+            "addr": 4026595332,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_logging_control": {
+            "addr": 4026595336,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_logging_status": {
+            "addr": 4026595340,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_logging_ev_status": {
+            "addr": 4026595344,
+            "size": 1,
+            "type": "ro"
+        },
+        "uart_logging_ev_pending": {
+            "addr": 4026595348,
+            "size": 1,
+            "type": "rw"
+        },
+        "uart_logging_ev_enable": {
+            "addr": 4026595352,
+            "size": 1,
+            "type": "rw"
+        }
+    },
+    "constants": {
+        "config_platform_name": "colognechip_gatemate_evb",
+        "config_clock_frequency": 8000000,
+        "config_cpu_has_interrupt": null,
+        "config_cpu_reset_addr": 0,
+        "config_cpu_type_vexriscv": null,
+        "config_cpu_variant_minimal": null,
+        "config_cpu_family": "riscv",
+        "config_cpu_name": "vexriscv",
+        "config_cpu_human_name": "vexriscv_min",
+        "config_cpu_nop": "nop",
+        "config_rom_init": 1,
+        "config_identifier": "litex soc on gatemate evb 2025-02-27 00:37:18",
+        "config_csr_data_width": 32,
+        "config_csr_alignment": 32,
+        "config_bus_standard": "wishbone",
+        "config_bus_data_width": 32,
+        "config_bus_address_width": 32,
+        "config_bus_bursting": 0,
+        "config_cpu_interrupts": 4,
+        "timer0_interrupt": 1,
+        "uart_interrupt": 0,
+        "uart_ice40_interrupt": 3,
+        "uart_logging_interrupt": 2,
+        "config_has_i2c": null
+    },
+    "memories": {
+        "rom": {
+            "base": 0,
+            "size": 62616,
+            "type": "cached"
+        },
+        "sram": {
+            "base": 268435456,
+            "size": 36864,
+            "type": "cached"
+        },
+        "hyperram": {
+            "base": 536870912,
+            "size": 8000000,
+            "type": "cached"
+        },
+        "csr": {
+            "base": 4026531840,
+            "size": 65536,
+            "type": "io"
+        }
+    }
+}

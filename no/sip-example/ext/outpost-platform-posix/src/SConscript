@@ -1,0 +1,80 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2017, 2023, Jan Sommer
+# Copyright (c) 2017, Moritz Ulmer
+# Copyright (c) 2017, Fabian Greif
+# Copyright (c) 2021, Jan-Gerd Mess
+# Copyright (c) 2022, Tobias Pfeffer
+# Copyright (c) 2023, Meß, Jan-Gerd
+# Copyright (c) 2024, Janosch Reinking
+# Copyright (c) 2024, Pieper, Pascal
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+modulename = "outpost_hal_posix"
+
+Import('envGlobal')
+
+if envGlobal['OS'] in ['posix', 'rtems', 'none', 'unittest_rtos']:
+    envGlobal.Append(CPPPATH=[os.path.abspath('.')])
+    files = []
+
+    star_system_includes = []
+
+    star_system_dir = '/usr/local/STAR-Dundee/STAR-System/'
+    if 'USE_STARSYSTEM' in envGlobal:
+        if not os.path.exists(star_system_dir):
+            print("============================================================")
+            print("Error: Path '{}' does not exist. Check whether StarSystem has been installed correctly.".format(
+                star_system_dir))
+            exit(-1)
+        star_system_path = os.path.abspath(star_system_dir)
+
+        star_system_includes = [os.path.join(star_system_path, os.path.relpath('inc/star')),
+                                os.path.join(star_system_path, os.path.relpath('apis/cpp_api/inc'))]
+
+        star_system_lib = os.path.join(star_system_path, 'lib/x86-64')
+        envGlobal.Append(LIBPATH=[star_system_lib])
+
+        files = envGlobal.Glob('outpost/spw_posix/*.cpp')
+
+    files += envGlobal.Glob('outpost/hal_posix/*.cpp',
+                            exclude=[
+                                "*/*/serial_port.cpp",
+                                "*/*/can_bus_port.cpp",
+                                "*/*/spidev.cpp"
+                            ])
+
+    libdeps = [
+        'outpost_hal',
+        'outpost_rtos',
+    ]
+    objects = []
+    if envGlobal['OS'] != 'rtems':
+        files += envGlobal.Glob('outpost/hal_posix/serial_port.cpp')
+        files += envGlobal.Glob('outpost/hal_posix/can_bus_port.cpp')
+        libdeps.append('serial')
+    else:
+        files += envGlobal.Glob('outpost/hal_posix/spidev.cpp')
+        # we use bsd's `recv` in ip-related units.
+        # if your project uses rtems with libbsd, add the following to
+        # somewhere in your SCons setup:
+        #    envGlobal.AddTransitiveDependencyToModule('outpost_hal_posix', ('bsd', 'external'))
+
+    includepaths = [os.path.abspath('.')] + star_system_includes
+
+    impl_files = []
+
+    envGlobal.RegisterLibrary(modulename, files, impl_files,
+                              includepaths=includepaths, dependencies=libdeps)
+else:
+    print("Warning: outpost-platform-posix is only compatible to OS "
+          "'posix' and 'rtems'. SConscript will be ignored")

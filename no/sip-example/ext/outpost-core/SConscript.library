@@ -1,0 +1,46 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2014-2015, 2017-2018, Fabian Greif
+# Copyright (c) 2017, Muhammad Bassam
+# Copyright (c) 2018, 2020, Jan-Gerd Mess
+# Copyright (c) 2018, Annika Ofenloch
+# Copyright (c) 2018-2020, Jan Malburg
+# Copyright (c) 2021, toth_no
+# Copyright (c) 2022, Tobias Pfeffer
+# Copyright (c) 2023, Pascal Pieper
+# Copyright (c) 2024, Pieper, Pascal
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+Import('envGlobal')
+
+if not 'OUTPOST_CORE_EXTPATH' in envGlobal:
+    envGlobal['OUTPOST_CORE_EXTPATH'] = os.path.join(envGlobal.Dir('.').abspath, 'ext')
+
+# for gsl/span et al
+envGlobal.SConscript('$OUTPOST_CORE_EXTPATH/SConscript.gsl', exports='envGlobal')
+
+# this and most sub-scripts use libdep tool
+envGlobal.Tool('libdep_resolve')
+envGlobal.Tool('utils_common')
+
+# disable exceptions (for library only)
+flags_bak = envGlobal['CXXFLAGS']
+envGlobal.Append(CXXFLAGS = ['-fno-exceptions']) # gcc and clang compatible
+
+library_scripts = envGlobal.FindFilesThatAreInACertainFolder('src', 'SConscript')
+envGlobal.SConscript(library_scripts, exports='envGlobal')
+
+print ("Outpost library:", end=' ')
+envGlobal.GenerateAllRegisteredLibraries(explain = True)
+
+# restore flags again
+envGlobal['CXXFLAGS'] = flags_bak

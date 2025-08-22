@@ -1,0 +1,32 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+#
+# Copyright (c) 2013, 2017, Fabian Greif
+# Copyright (c) 2019, 2021, Felix Passenberg
+# Copyright (c) 2020, Jan-Gerd Mess
+# Copyright (c) 2021, 2024, Passenberg, Felix Constantin
+# Copyright (c) 2022, Tobias Pfeffer
+# Copyright (c) 2024, Pieper, Pascal
+#
+# This file is part of the Simple Interface Protocols (SIP) examples.
+#
+# It is supplied solely for the use by TUHH and HAW Hamburg
+# in the frame of the PLUTO 1 flight mission.
+# Distribution outside of the project or to people with no share in the PLUTO mission requires explicit permit granted by DLR-RY-AVS
+# Contact jan-gerd.mess@dlr.de when in doubt.
+
+import os
+
+Import('envGlobal')
+modulename = "outpost_" + os.path.basename(os.path.abspath('../'))
+
+includepaths = os.path.abspath('.')
+
+files = [] # envGlobal.RecursiveGlob('.cpp') # none
+impl_files = [] # envGlobal.RecursiveGlob('_impl.h') # none
+libdeps = [
+    'outpost_support', #heartbeat
+]
+
+envGlobal.RegisterLibrary(modulename, files, impl_files,
+                          includepaths = includepaths, dependencies = libdeps)

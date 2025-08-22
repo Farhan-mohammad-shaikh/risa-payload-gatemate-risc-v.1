@@ -1,0 +1,34 @@
+#!/usr/bin/env python
+#
+# Copyright (c) 2013-2014, 2016-2017, German Aerospace Center (DLR)
+#
+# This file is part of the development version of OUTPOST.
+#
+# This Source Code Form is subject to the terms of the Mozilla Public
+# License, v. 2.0. If a copy of the MPL was not distributed with this
+# file, You can obtain one at http://mozilla.org/MPL/2.0/.
+#
+# Authors:
+# - 2013-2014, 2016-2017, Fabian Greif (DLR RY-AVS)
+# - 2017, Muhammad Bassam (DLR RY-AVS)
+
+import os
+
+Import('envGlobal')
+
+# from gsl/gsl/gsl_assert:
+#
+# There are three configuration options for this GSL implementation's behavior
+# when pre/post conditions on the GSL types are violated:
+#
+# 1. GSL_TERMINATE_ON_CONTRACT_VIOLATION: std::terminate will be called (default)
+# 2. GSL_THROW_ON_CONTRACT_VIOLATION: a gsl::fail_fast exception will be thrown
+# 3. GSL_UNENFORCED_ON_CONTRACT_VIOLATION: nothing happens
+#
+envGlobal.Append(CXXFLAGS=['-DGSL_TERMINATE_ON_CONTRACT_VIOLATION=1',
+                            '-UGSL_THROW_ON_CONTRACT_VIOLATION',
+                            '-UGSL_UNENFORCED_ON_CONTRACT_VIOLATION'])
+
+envGlobal.Append(CPPPATH=[
+    os.path.abspath('gsl/include/'),
+])

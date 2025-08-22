@@ -1,0 +1,33 @@
+file /home/user/dev/sip-example/ext/outpost-core/SConscript.test,line 34:
+	Configure(confdir = .sconf_temp)
+scons: Configure: Checking for C++ header file libdwarf/dwarf.h... 
+scons: Configure: ".sconf_temp/conftest_9caa5486a461253119b368d4c92d443d_0.cpp" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_9caa5486a461253119b368d4c92d443d_0.cpp <-
+  |  |
+  |  |#include <libdwarf/dwarf.h>
+  |  |
+  |  |
+  |
+scons: Configure: ".sconf_temp/conftest_9caa5486a461253119b368d4c92d443d_0_610be5d1fcbcf1035383411e9f04bf80.o" is up to date.
+scons: Configure: The original builder output was:
+  |[;0;32mCompiling C++·· [;0;33m.sconf_temp/conftest_9caa5486a461253119b368d4c92d443d_0_610be5d1fcbcf1035383411e9f04bf80.o[;0;0m
+  |
+scons: Configure: (cached) yes
+
+scons: Configure: Checking for C++ header file libelf.h... 
+scons: Configure: ".sconf_temp/conftest_0d3186cf72a1fc6d37b5f4287bbe776e_0.cpp" is up to date.
+scons: Configure: The original builder output was:
+  |.sconf_temp/conftest_0d3186cf72a1fc6d37b5f4287bbe776e_0.cpp <-
+  |  |
+  |  |#include <libelf.h>
+  |  |
+  |  |
+  |
+scons: Configure: ".sconf_temp/conftest_0d3186cf72a1fc6d37b5f4287bbe776e_0_5f26a4cb4e208a25bbef8c7eeda40a2c.o" is up to date.
+scons: Configure: The original builder output was:
+  |[;0;32mCompiling C++·· [;0;33m.sconf_temp/conftest_0d3186cf72a1fc6d37b5f4287bbe776e_0_5f26a4cb4e208a25bbef8c7eeda40a2c.o[;0;0m
+  |
+scons: Configure: (cached) yes
+
+
