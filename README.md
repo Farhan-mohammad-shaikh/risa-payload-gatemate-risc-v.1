@@ -1,30 +1,128 @@
-# Memory Evaluation for Smart Sensors under Radiation
+# RISA Payload – Gatemate RISC-V Platform
 
-Lightweight, software-only framework to **detect and classify radiation-induced bit flips** in external SPI NOR flash using a **low-power Lattice iCE40 UltraPlus FPGA**. The system performs periodic **read-compare** cycles against a fixed reference pattern, logs mismatches to **HyperRAM**, and reports to an on-board computer (OBC). Designed for resource-constrained, space-relevant platforms (e.g., CubeSats). :contentReference[oaicite:0]{index=0}
+## Overview
+
+This project implements a RISC-V based payload targeting the Cologne Chip Gatemate FPGA platform.  
+It is designed as part of a radiation and reliability-focused embedded experiment framework, where a minimal RISC-V system performs controlled memory evaluation and monitoring tasks.
+
+The goal of this repository is to provide:
+
+- A minimal RISC-V soft-core configuration
+- Build and programming flow for the Gatemate evaluation board
+- Structured payload execution framework
+- Clean reproducible FPGA build setup
+
+This project reflects FPGA system design, embedded firmware integration, and structured hardware-software co-design.
 
 ---
 
-## Key Features
+## Platform
 
-- **Software-only SEU monitoring**: Detects **SEU**, **sticky**, and **cluster** bit flips without hardware ECC/TMR. :contentReference[oaicite:1]{index=1}  
-- **Deterministic timing**: Full **16 MB** scan completes in ~**23.9 minutes** at **8 MHz**, with **sub-0.04 ms** per-flip detection latency. :contentReference[oaicite:2]{index=2}  
-- **Compact logs**: Mismatches (address, offset, value) recorded to **HyperRAM**; supports ~**15,300** events (model-based). :contentReference[oaicite:3]{index=3}  
-- **Low-power target**: Built around **iCE40 UltraPlus** + **IS25WP128** SPI NOR flash; adaptable to other SPI flashes. :contentReference[oaicite:4]{index=4}
+- FPGA: Cologne Chip Gatemate
+- CPU: Minimal RISC-V soft-core configuration
+- Build Flow: Python + Make
+- Host OS: Linux recommended
 
 ---
 
+## Project Structure
 
-# RISA Payload Gatemate Source code
+```
+risa-payload-gatemate-risc-v.1/
+├── colognechip_gatemate_evb.py
+├── Makefile
+├── README.md
+└── .vscode/
+```
 
-### Creating and programming
-./colognechip_gatemate_evb.py --cpu-variant=minimal --build
+The Python script configures and builds the minimal RISC-V system.  
+The Makefile automates build, documentation generation, and programming steps.
 
+---
 
+## Build Instructions
+
+### Clean Build
+
+```bash
 make clean
+```
+
+### Compile Design
+
+```bash
 make
+```
+
+### Generate Documentation (if configured)
+
+```bash
 make doc
+```
+
+---
+
+## Program FPGA
+
+```bash
 sudo make pgm
+```
 
+Ensure the Gatemate board is connected and recognized before programming.
 
+---
 
-### Toolchain Setup: TODO
+## Alternative Build Method
+
+You may also build directly using:
+
+```bash
+./colognechip_gatemate_evb.py --cpu-variant=minimal --build
+```
+
+This builds the minimal RISC-V configuration for the evaluation board.
+
+---
+
+## System Design Concept
+
+The RISC-V payload is designed to:
+
+- Execute deterministic memory routines
+- Perform structured read/compare cycles
+- Support reliability experimentation workflows
+- Operate within constrained FPGA resources
+
+The minimal CPU configuration reduces complexity while enabling controlled experiment execution.
+
+---
+
+## Applications
+
+- Radiation reliability experimentation
+- Memory validation payload development
+- FPGA-based embedded system prototyping
+- Academic research in fault-tolerant systems
+- CubeSat payload experimentation frameworks
+
+---
+
+## Key Technical Highlights
+
+- Minimal RISC-V soft-core configuration
+- FPGA toolchain integration
+- Structured Make-based build flow
+- Clean reproducible build process
+- Designed for reliability-focused embedded experimentation
+
+---
+
+## Requirements
+
+- Linux host system
+- Python 3
+- Make
+- Cologne Chip Gatemate FPGA toolchain installed and configured
+- Gatemate evaluation board
+
+---
